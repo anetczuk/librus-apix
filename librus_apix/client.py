@@ -257,20 +257,21 @@ class Client:
                     # during recent maintenance there were no messages (empty list)
                     raise MaintananceError("maintenance")
                 raise MaintananceError(message_list[0]["description"])
+
             s.get(
-                self.API_URL
-                + "/OAuth/Authorization?client_id=46&response_type=code&scope=mydata",
-                proxies=self.proxy,
+                "https://synergia.librus.pl/loguj/portalRodzina?v=1774820765",
             )
+
             response = s.post(
                 self.API_URL + "/OAuth/Authorization?client_id=46",
                 data={"action": "login", "login": username, "pass": password},
                 proxies=self.proxy,
             )
+            s.get(
+                "https://api.librus.pl/OAuth/Authorization/2FA?client_id=46",
+            )
             if response.json()["status"] == "error":
                 raise AuthorizationError(response.json()["errors"][0]["message"])
-
-            s.get(self.API_URL + response.json().get("goTo"), proxies=self.proxy)
 
             cookies: Dict = dict_from_cookiejar(s.cookies)
             dzienniks = cookies.get("DZIENNIKSID")
